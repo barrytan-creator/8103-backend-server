@@ -1,6 +1,10 @@
 const express = require('express');
-
+const axios = require('axios');
 const app = express();
+
+// all variables defined in the env file will 
+// be available in the process.env variable
+require('dotenv').config();
 
 // ROUTES BEGIN ///////////////////////////////////////////////////////////////
 
@@ -16,6 +20,22 @@ app.get('/welcome', function(req,res){
 
 app.get('/goodbye', function(req,res){
     res.send("Goodbye");
+});
+
+app.get('/api/places/search', async function(req,res){
+    const query = req.query;
+    const options = {
+        "params": query,
+        "headers":{
+            "Authorization": "Bearer " + process.env.FSQ_API_KEY,
+            "Accept": "application/json",
+            "X-Places-Api-Version": "2025-06-17"
+        }
+    }
+    const response = await axios.get("https://places-api.foursquare.com/places/search", options);
+    // console.log(response.data);
+    // send back the data in JSON data
+    res.json(response.data);
 })
 
 // NO ROUTES AFTER app.listen() ///////////////////////////////////////////////
